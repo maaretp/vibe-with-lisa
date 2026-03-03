@@ -1,0 +1,29 @@
+The Potion Shop Website - Bug Report
+===================================
+Date: March 3, 2026
+URL: https://epictestquest.github.io/the-Potion-Shop/
+
+BUGS FOUND (10 total):
+
+🖼️ MISSING RESOURCES (2 bugs)
+1. Missing Featured Potion Image - The featured potion image (featured-potion.png) fails to load with a 404 error
+2. Missing Favicon - The website favicon (favicon.ico) fails to load with a 404 error
+
+💰 PRICING & CALCULATION BUGS (3 bugs) 
+3. Size Multiplier Inconsistency - The Bottle size shows "2x price" in the description but displays "Bottle (2.5x)" in the order summary
+4. Incorrect Size Pricing Calculations - Size multipliers don't calculate correctly (Flask 1.5x and Bottle 2x don't produce expected totals)
+5. Incorrect Potency Pricing Calculations - Enhanced (+25%) and Maximum (+75%) potency multipliers don't calculate the expected price increases
+
+📝 INPUT VALIDATION BUGS (4 bugs)
+6. Email Validation Failure - The form accepts invalid email formats (e.g., "invalid-email") and allows order submission
+7. Negative Quantity Acceptance - The quantity field accepts negative values (e.g., -5), leading to negative pricing
+8. Negative Price Display - System displays negative subtotals (-487.88 gold) and totals (-484.88 gold) when negative quantities are used
+9. Quantity Display Inconsistency - When quantity input shows "0", the order summary still displays "Quantity: 1"
+
+🔗 BROKEN LINKS (1 bug)
+10. Broken Social Media Link - The "Wandergram" footer link points to a fake domain (wandergram.fake) that results in a browser error page
+
+SEVERITY ASSESSMENT:
+- Critical: Negative pricing, email validation failure, calculation errors (could allow fraudulent orders)
+- High: Missing featured product image, broken links (impacts user experience and credibility) 
+- Medium: Missing favicon, display inconsistencies (minor UX issues)
