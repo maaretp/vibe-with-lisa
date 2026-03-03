@@ -1,0 +1,23 @@
+{
+  "name": "vibe-with-lisa",
+  "version": "1.0.0",
+  "description": "Vibe programming for test automation with Lisa.",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maaretp/vibe-with-lisa.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/maaretp/vibe-with-lisa/issues"
+  },
+  "homepage": "https://github.com/maaretp/vibe-with-lisa#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.3.3"
+  }
+}
