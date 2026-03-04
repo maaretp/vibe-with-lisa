@@ -1,0 +1,30 @@
+BUG-01: Flask size multiplier calculates as 1.35x instead of the advertised 1.5x, undercharging customers.
+BUG-02: Bottle size multiplier calculates as 2.5x instead of the advertised 2x, overcharging customers.
+BUG-03: Featured potion "Add to Order" charges 36 gold (10% off) instead of 34 gold (15% off as displayed).
+BUG-04: Delivery cost (Owl Post 5g, Dragon Express 15g) is never added to the order total.
+BUG-05: Typing a negative number (e.g. -5) in the quantity field produces a negative order total (-122 gold).
+BUG-06: Order can be submitted without selecting any potion — confirmed with "No potion selected" and 3g total.
+BUG-07: Featured potion "Add to Order" adds 36g to subtotal but doesn't update the potion name in the order summary.
+BUG-08: After form submission, the JavaScript orderState is not reset — next order inherits stale potion/ingredient/featured state.
+BUG-09: The featuredAdded flag persists across orders, silently adding 36g to every subsequent order's subtotal.
+BUG-10: Quantity field accepts values beyond max=99 when typed directly (e.g. 999 produces a 24,978g total).
+BUG-11: Ingredients cost is added once regardless of quantity — 3x Healing Draught with Dragon Scale charges 15g instead of 45g.
+BUG-12: Featured potion image (images/featured-potion.png) returns HTTP 404 — broken image in hero section.
+BUG-13: Shadow Walker Lyra's review displays 5 stars (★★★★★) but the review text says "4/5 would recommend".
+BUG-14: Featured potion <img> tag is missing the required alt attribute (WCAG 1.1.1 critical violation).
+BUG-15: Quantity input (hashtag#quantity) has no associated label, aria-label, or title (WCAG 4.1.2 critical violation).
+BUG-16: "15% OFF" badge has insufficient color contrast (3.82:1 vs required 4.5:1, white on hashtag#e74c3c).
+BUG-17: Footer heading hierarchy is broken — h5 ("Shop Hours") followed by h4 ("Visit Us"), skipping h3.
+BUG-18: Quantity input has tabindex="-1", making it inaccessible to keyboard-only users.
+BUG-19: Copyright year reads "© 1247-2024" — should be 2026.
+BUG-20: Confirmation modal shows only order number and delivery estimate — no potion name, quantity, or total.
+BUG-21: Contact Crystal (email) field uses type="text" instead of type="email", bypassing email validation.
+BUG-22: Favicon returns HTTP 404 — no favicon configured.
+BUG-23: No <​meta name="description"> tag — impacts SEO and social sharing.
+BUG-24: SpellBook and Potion-terest footer links point to "#" — non-functional placeholder links.
+BUG-25: Wandergram link points to wandergram.fake domain which doesn't exist.
+BUG-26: Seven <div> elements nested inside <label> elements — invalid per HTML spec.
+BUG-27: Four buttons missing explicit type attribute (defaults to submit, may cause unintended form submissions).
+BUG-28: Missing security headers: CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy.
+BUG-29: Bottle size text in order summary says "(2.5x)" while product listing says "2x price" — inconsistent display.
+BUG-30: Duplicate form control name "ingredient" flagged by HTML validator (5 instances for 6 checkboxes).
