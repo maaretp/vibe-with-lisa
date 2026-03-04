@@ -1,0 +1,284 @@
+Bug Reports — The Enchanted Brew Shop
+https://epictestquest.github.io/the-Potion-Shop/
+Date: 2026-03-04
+======================================================================
+
+--- SUMMARY ---
+
+7 Critical bugs:
+
+Featured potion charges 36 gold instead of displayed 34 gold (15% discount is actually 10%)
+Flask size multiplier is 1.35x instead of labeled 1.5x
+Bottle size label says "2x" but charges 2.5x
+Quantity doesn't multiply ingredient costs
+Negative quantities allowed (negative totals!)
+Orders accepted without selecting any base potion
+Delivery cost completely missing from total
+
+6 Major bugs:
+
+Email field accepts any text (type="text" not "email")
+Featured potion image 404
+Star rating shows 5 stars for a "4/5" review
+Max quantity 99 bypassable via direct input
+JS state not reset after order submission
+Quantity input has tabindex="-1" (not keyboard accessible)
+
+7 Moderate bugs:
+
+Broken social media links (href="#")
+Wandergram link to non-existent domain
+Missing rel="noopener" security attribute
+Outdated copyright (2024 vs 2026)
+Inconsistent footer heading levels (H4/H5 mix)
+Featured image missing alt text
+Email field lacks visible label
+
+10 Minor bugs/improvements:
+
+No way to remove featured potion
+"Add to Order" button confusingly re-enables
+Order summary confusion when no base potion selected
+Inconsistent link target behavior
+Missing order details in confirmation
+Delivery cost not shown in summary
+No textarea character limit
+Missing name attributes on form fields
+Quantity "0" display inconsistency
+No visible validation error messages
+
+
+--- CRITICAL BUGS ---
+
+BUG #1: Featured potion price calculation is wrong
+Severity: Critical
+Steps: Click "Add to Order" on the featured Elixir of Eternal Focus.
+Expected: The order should be charged 34 gold (15% off 40 gold as displayed).
+Actual: The order is charged 36 gold (hardcoded in code as featuredTotal = 36).
+Note: The badge says "15% OFF" and the displayed sale price is 34 gold,
+      but the actual charge is 36 gold (which is 10% off, not 15%).
+
+BUG #2: Flask size multiplier is wrong
+Severity: Critical
+Steps: Select any base potion, then select Flask size.
+Expected: Flask labeled "1.5x price" should multiply the base price by 1.5.
+Actual: Flask multiplies by 1.35 instead of 1.5.
+Example: Healing Draught (25 gold) with Flask = 33.75 gold (25 × 1.35),
+         should be 37.50 gold (25 × 1.5).
+
+BUG #3: Bottle size label shows "2x price" but actually charges 2.5x
+Severity: Critical
+Steps: Select any base potion, then select Bottle size.
+Expected: Bottle labeled "2x price" should multiply the base price by 2.
+Actual: Bottle multiplies by 2.5 instead of 2.
+Example: Healing Draught (25 gold) with Bottle = 62.50 gold (25 × 2.5),
+         should be 50.00 gold (25 × 2).
+Note: The order summary label shows "Bottle (2.5x)" which matches the
+      actual multiplier but contradicts the selection label "2x price".
+
+BUG #4: Quantity does not multiply ingredient costs
+Severity: Critical
+Steps: Select a base potion, add ingredients, set quantity > 1.
+Expected: Total should be (base_price + ingredients) × quantity.
+Actual: Total is (base_price × quantity) + ingredients (not multiplied).
+Example: Healing Draught (25) + Dragon Scale (15) + Moonstone Dust (8)
+         at quantity 2: expected (25+23)×2 = 96 gold, actual 25×2+23 = 73 gold.
+         Each potion should include its own set of ingredients.
+
+BUG #5: Negative quantity allowed — causes negative totals
+Severity: Critical
+Steps: Click the quantity input field and manually type a negative number (e.g., -5).
+Expected: Negative values should be rejected or corrected to 1.
+Actual: Negative values are accepted. With Healing Draught and quantity -5,
+        the subtotal becomes -102.00 gold and total -99.00 gold.
+
+BUG #6: Order can be submitted without selecting a base potion
+Severity: Critical
+Steps: Fill in required delivery fields without selecting any base potion,
+       then click "Brew My Order".
+Expected: Form should require a base potion to be selected before submission.
+Actual: Order is confirmed with "No potion selected" in summary and a
+        total of only 3 gold (just the brewing fee).
+
+BUG #7: Delivery cost is not included in the order total
+Severity: Critical
+Steps: Select a potion, choose a delivery method, and observe the order summary.
+Expected: Total should include delivery cost (Owl Post 5 gold or Dragon Express 15 gold).
+Actual: The total only includes subtotal + 3 gold brewing fee. Delivery cost
+        is completely omitted from the price calculation.
+Note: The source code has an explicit comment: "// Calculate total with brewing fee
+      (note: delivery not included)" confirming this is a known gap.
+
+--- MAJOR BUGS ---
+
+BUG #8: Email field accepts any text — no email format validation
+Severity: Major
+Steps: Enter any non-email text (e.g., "not-an-email") in the Contact Crystal
+       field and submit the form.
+Expected: Email field should validate email format (e.g., require @ symbol).
+Actual: The field has type="text" instead of type="email", so any text is accepted.
+
+BUG #9: Featured potion image returns 404 error
+Severity: Major
+Steps: Load the page and observe the featured potion area.
+Expected: A product image should be displayed.
+Actual: Image at /images/featured-potion.png returns HTTP 404.
+        A console error is logged: "Failed to load resource: the server responded
+        with a status of 404 ()".
+
+BUG #10: Star rating mismatch on customer review
+Severity: Major
+Steps: Scroll to the Customer Reviews section and read Shadow Walker Lyra's review.
+Expected: Star rating should match the reviewer's stated satisfaction.
+Actual: The review displays ★★★★★ (5 stars) but the review text explicitly
+        states "4/5 would recommend", indicating it should be 4 stars (★★★★☆).
+
+BUG #11: Maximum quantity can be bypassed via direct input
+Severity: Major
+Steps: Click the quantity input field and manually type a number > 99 (e.g., 99999).
+Expected: Values above 99 should be rejected (the HTML has max="99").
+Actual: Any large number is accepted. Entering 99999 shows a subtotal of
+        2,499,998.00 gold. The +/- buttons enforce min/max, but direct input does not.
+
+BUG #12: Form reset on submission does not reset JavaScript state
+Severity: Major
+Steps: Add featured potion, select a base potion with options, submit the order,
+       click "Continue Shopping".
+Expected: All order state should be fully reset for a new order.
+Actual: document.getElementById('order-form').reset() resets HTML form elements,
+        but the JavaScript orderState object retains old values (e.g., featuredAdded
+        stays true, causing the featured potion price to persist in subsequent orders).
+
+BUG #13: Quantity input not keyboard accessible (tabindex="-1")
+Severity: Major
+Steps: Try to navigate to the quantity field using the Tab key.
+Expected: The quantity input should be reachable via keyboard navigation.
+Actual: The input has tabindex="-1", making it unreachable via Tab key.
+        Users relying on keyboard navigation cannot change the quantity.
+
+--- MODERATE BUGS ---
+
+BUG #14: SpellBook and Potion-terest social media links are broken
+Severity: Moderate
+Steps: Click the "SpellBook" or "Potion-terest" links in the footer.
+Expected: Links should navigate to the respective social media profiles.
+Actual: Both links have href="#", which just scrolls to the top of the page.
+
+BUG #15: Wandergram link points to a non-existent domain
+Severity: Moderate
+Steps: Click the "Wandergram" link in the footer.
+Expected: Link should open the shop's social media profile.
+Actual: Links to https://wandergram.fake/enchanted-brew — a domain that does
+        not exist and will fail to resolve.
+
+BUG #16: Wandergram link missing rel="noopener noreferrer" (security issue)
+Severity: Moderate
+Steps: Inspect the Wandergram link in the footer.
+Expected: Links with target="_blank" should have rel="noopener noreferrer" for security.
+Actual: The Wandergram link has target="_blank" but no rel attribute.
+        This could allow reverse tabnabbing attacks.
+
+BUG #17: Copyright year is outdated
+Severity: Moderate
+Steps: Scroll to the footer.
+Expected: Copyright should reflect the current year (2026).
+Actual: Footer shows "© 1247-2024 The Enchanted Brew Shop" — two years out of date.
+
+BUG #18: Footer heading hierarchy is inconsistent
+Severity: Moderate
+Steps: Inspect the heading structure in the footer.
+Expected: All footer headings should be at the same level and follow proper hierarchy.
+Actual: "Shop Hours" uses H5 while "Visit Us", "Contact", and "Follow Us" use H4.
+        The heading levels also skip from H3 (in main content) to H4/H5 (in footer),
+        violating heading hierarchy best practices for accessibility.
+
+BUG #19: Featured potion image has empty alt text
+Severity: Moderate
+Steps: Inspect the featured potion image element.
+Expected: The product image should have descriptive alt text for screen readers.
+Actual: The img element has alt="" (empty), marking it as decorative when it is
+        actually meaningful content (the featured product image).
+
+BUG #20: Contact Crystal (email) field lacks visible label element
+Severity: Moderate
+Steps: Observe the email field in the Delivery Details section.
+Expected: All form fields should have visible labels (like Full Name, Castle/Tower Name).
+Actual: The email field only has a placeholder as its label, while other fields have
+        proper visible labels above them. The field uses its placeholder attribute
+        "Contact Crystal (email)" as its accessible name.
+
+--- MINOR BUGS / IMPROVEMENT SUGGESTIONS ---
+
+BUG #21: No way to remove featured potion from order
+Severity: Minor
+Steps: Click "Add to Order" on the featured potion.
+Expected: There should be a way to remove it.
+Actual: Once added, there is no remove/undo option. The only way to remove it
+        is to refresh the page.
+
+BUG #22: "Add to Order" button re-enables after 2 seconds
+Severity: Minor
+Steps: Click "Add to Order" for the featured potion, wait 2 seconds.
+Expected: Button should remain in "Added" state or provide clear feedback.
+Actual: Button shows "✓ Added!" briefly, then reverts to "Add to Order" after
+        2 seconds, making it unclear whether the item is still in the order.
+
+BUG #23: Order summary shows "No potion selected" with non-zero subtotal
+Severity: Minor
+Steps: Add featured potion to order without selecting a base potion.
+Expected: Order summary should clearly show the featured potion name and price.
+Actual: Summary shows "No potion selected" with "-" for price, but the subtotal
+        shows 36.00 gold. Confusing for the user.
+
+BUG #24: Social media links have inconsistent target behavior
+Severity: Minor
+Steps: Compare the behavior of footer social links.
+Expected: All social media links should behave consistently (all open in new tabs or none).
+Actual: Wandergram opens in a new tab (target="_blank") while SpellBook and
+        Potion-terest do not have target="_blank".
+
+BUG #25: Order confirmation does not show order details
+Severity: Minor (Improvement)
+Steps: Submit a completed order.
+Expected: Confirmation should summarize what was ordered and the total cost.
+Actual: Confirmation only shows order number and delivery estimate. No item details,
+        no total price, no delivery address — no way for the user to verify their order.
+
+BUG #26: Delivery cost not visible anywhere in order summary
+Severity: Minor (Improvement)
+Steps: Select a delivery method and check the order summary.
+Expected: Order summary should show the delivery cost as a line item.
+Actual: The order summary has no line for delivery cost. Users cannot see
+        how much delivery will cost in the summary before ordering.
+
+BUG #27: No maximum character limit on Special Instructions field
+Severity: Minor
+Steps: Enter a very long text in the Special Instructions textarea.
+Expected: There should be a reasonable character limit (e.g., 500 characters).
+Actual: The textarea has no maxLength attribute — unlimited text can be entered.
+
+BUG #28: Form fields missing name attributes
+Severity: Minor
+Steps: Inspect the HTML of form input fields.
+Expected: All form inputs should have name attributes for proper form data submission.
+Actual: Several fields lack name attributes: customer-name, contact-crystal,
+        castle-name, tower-number, kingdom, quantity, special-instructions.
+        They only have id attributes.
+
+BUG #29: Quantity field shows "0" when typed but order summary ignores it
+Severity: Minor
+Steps: Clear the quantity field and type "0".
+Expected: Either prevent 0 or update the summary to reflect it.
+Actual: The input shows "0" but the order summary still displays "Quantity: 1"
+        and calculates based on quantity 1 (due to parseInt(value) || 1 fallback).
+        Inconsistent display.
+
+BUG #30: No feedback/error messages for form validation
+Severity: Minor (Improvement)
+Steps: Try to submit the form with empty required fields.
+Expected: Clear error messages should appear next to invalid fields.
+Actual: The form just focuses on the first empty required field with no visible
+        error message. Users may not understand why submission failed.
+
+======================================================================
+Total: 30 issues identified (7 critical, 6 major, 7 moderate, 10 minor/improvements)
